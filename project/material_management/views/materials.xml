@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="material_management.materials_tree_view" model="ir.ui.view">
+        <field name="name">material.management.materials.tree</field>
+        <field name="model">material.management.materials</field>
+        <field name="arch" type="xml">
+            <tree string="materials" multi_edit="1" sample="1">
+                <field name="code"/>
+                <field name="name"/>
+                <field name="type"/>
+                <field name="buy_price"/>
+                <field name="user_id"/>
+            </tree>
+        </field>
+    </record>
+    <record id="material_management.materials_form_view" model="ir.ui.view">
+        <field name="name">material.management.materials.form</field>
+        <field name="model">material.management.materials</field>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+            <form string="Material">
+                <sheet>
+                    <group>
+                        <field name="code"/>
+                        <field name="name"/>
+                        <field name="type"/>
+                        <field name="buy_price" min="100"/>
+                        <field name="user_id"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record id="materials_action" model="ir.actions.act_window">
+        <field name="name">Material</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">material.management.materials</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="material_management.materials_tree_view"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Start Record materials
+            </p><p>
+                Record materials here and start managing your materials
+            </p>
+        </field>
+    </record>
+</odoo>

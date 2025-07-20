@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <menuitem
+            id="material_management_materials_menu"
+            name="Material Management"
+            sequence="1"
+            action="materials_action"/>
+
+            
+    </data>
+</odoo>
