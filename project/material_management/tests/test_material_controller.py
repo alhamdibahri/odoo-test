@@ -110,3 +110,105 @@ class TestMaterialController(HttpCase):
         self.assertIn('result', get_json)
         self.assertIsInstance(get_json['result'], list)
         self.assertTrue(any(m['code'] == "MTRL-002" for m in get_json['result']))
+
+    def test_update_material(self):
+        print("\n--- Starting test_update_material ---")
+        print("-> Creating material manually in DB...")
+        mat = self.env['material.management.materials'].create({
+            "code": "MTRL-003",
+            "name": "Jeans Basic",
+            "type": "jeans",
+            "buy_price": 180,
+            "user_id": self.supplier.id,
+        })
+        print(f"-> Material '{mat.code}' created.")
+
+        print("-> Logging in for session...")
+        login_data = {
+            "jsonrpc": "2.0",
+            "params": {
+                "db": self.env.cr.dbname,
+                "login": self.supplier.login,
+                "password": "test123"
+            }
+        }
+        self.url_open(
+            '/auth/login',
+            data=json.dumps(login_data),
+            headers={'Content-Type': 'application/json'}
+        )
+
+        print("-> Updating material...")
+        update_data = {
+            "jsonrpc": "2.0",
+            "params": {
+                "id": mat.id,
+                "data": {
+                    "name": "Jeans Premium",
+                    "buy_price": 200
+                }
+            }
+        }
+        update_response = self.url_open(
+            '/materials/update',
+            data=json.dumps(update_data),
+            headers={'Content-Type': 'application/json'}
+        )
+        update_json = update_response.json()
+        print("-> Update response:", update_json)
+
+        self.assertIn('result', update_json)
+        self.assertTrue(update_json['result'])
+
+        mat = self.env['material.management.materials'].browse(mat.id)
+        self.assertEqual(mat.name, "Jeans Premium")
+        self.assertEqual(mat.buy_price, 200)
+
+    def test_delete_material(self):
+        print("\n--- Starting test_delete_material ---")
+        print("-> Creating material manually in DB...")
+        mat = self.env['material.management.materials'].create({
+            "code": "MTRL-004",
+            "name": "fabric Basic",
+            "type": "fabric",
+            "buy_price": 220,
+            "user_id": self.supplier.id,
+        })
+        mat_id = mat.id
+        print(f"-> Material '{mat.code}' created with ID {mat_id}.")
+
+        print("-> Logging in for session...")
+        login_data = {
+            "jsonrpc": "2.0",
+            "params": {
+                "db": self.env.cr.dbname,
+                "login": self.supplier.login,
+                "password": "test123"
+            }
+        }
+        self.url_open(
+            '/auth/login',
+            data=json.dumps(login_data),
+            headers={'Content-Type': 'application/json'}
+        )
+
+        print("-> Deleting material...")
+        delete_data = {
+            "jsonrpc": "2.0",
+            "params": {
+                "id": mat_id
+            }
+        }
+        delete_response = self.url_open(
+            '/materials/delete',
+            data=json.dumps(delete_data),
+            headers={'Content-Type': 'application/json'}
+        )
+        delete_json = delete_response.json()
+        print("-> Delete response:", delete_json)
+
+        self.assertIn('result', delete_json)
+        self.assertTrue(delete_json['result'])
+
+        self.assertFalse(self.env['material.management.materials'].browse(mat_id).exists())
+
